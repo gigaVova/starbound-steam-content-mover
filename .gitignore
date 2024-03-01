@@ -1,2 +1,5 @@
 # Default folder for files
 content/
+
+# Executable files
+*.exe
