@@ -51,7 +51,7 @@ func copyFiles(srcDirectoryPath, targetDirectoryPath string, wg *sync.WaitGroup)
 
 	fmt.Print("Copying.. ")
 	startTime := time.Now()
-	// going through all of the directories of source folder
+	// going through all the directories of source folder
 	for _, entry := range entries {
 		if entry.IsDir() {
 			// save the name (steam id)
@@ -59,13 +59,13 @@ func copyFiles(srcDirectoryPath, targetDirectoryPath string, wg *sync.WaitGroup)
 			// path to the current directory
 			folderPath := filepath.Join(srcDirectoryPath, currentDirectoryName)
 
-			// all entries (files) of dirictory with content
+			// all entries (files) of directory with content
 			files, err := os.ReadDir(folderPath)
 			if err != nil {
 				panic(err)
 			}
 
-			// going through all of the entries
+			// going through all the entries
 			for _, file := range files {
 				if !file.IsDir() {
 					if strings.Split(file.Name(), ".")[1] == "pak" {
