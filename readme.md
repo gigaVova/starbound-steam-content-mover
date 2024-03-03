@@ -1,5 +1,7 @@
 # starbound-steam-content-mover
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/gigavova/starbound-steam-content-mover)](https://goreportcard.com/report/github.com/gigavova/starbound-steam-content-mover)
+
 ## How can I make use of it?
 
 If you need to move `.pak` files from Steam's workshop folder to the native Starbound's mods folder, this app will do exactly this
