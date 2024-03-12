@@ -40,4 +40,4 @@ BUT! This will create files without extensions (unexpectedly). They can be delet
 ## Todo
 
 - [ ] Find the source of extensionless files
-- [ ] Tell about this app on a forum
+- [x] Tell about this app on a forum
