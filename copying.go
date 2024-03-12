@@ -17,9 +17,10 @@ func checkTargetDirectory(targetDir string) {
 	if _, err := os.Stat(targetDir); errors.Is(err, os.ErrNotExist) {
 		err := os.Mkdir(targetDir, fs.ModeDir)
 		if err != nil {
-			slog.Error("")
+			slog.Error("couldn't create a directory", "error", err, "targetDir", targetDir)
 		}
-		fmt.Printf("Created %s\n", targetDir)
+
+		slog.Info("successfully created", "targetDir", targetDir)
 	}
 }
 
