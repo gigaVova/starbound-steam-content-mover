@@ -38,50 +38,93 @@ func copyFile(src, dst string) error {
 	return nil
 }
 
-func copyFiles(d directories, wg *sync.WaitGroup) {
+func copyFiles(d directories, scrapTitles bool, wg *sync.WaitGroup) {
 	wg.Add(1)
 	// all entries (directories) of source folder
-	entries, err := os.ReadDir(*d.targetDirectoryPath)
+	entries, err := os.ReadDir(*d.srcDirectoryPath)
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Print("Copying.. ")
 	startTime := time.Now()
-	// going through all the directories of source folder
-	for _, entry := range entries {
-		if entry.IsDir() {
-			// save the name (steam id)
-			currentDirectoryName := entry.Name()
-			// path to the current directory
-			folderPath := filepath.Join(*d.srcDirectoryPath, currentDirectoryName)
 
-			// all entries (files) of directory with content
-			files, err := os.ReadDir(folderPath)
-			if err != nil {
-				panic(err)
+	if scrapTitles {
+		// going through all the directories of source folder
+		for _, entry := range entries {
+			if entry.IsDir() {
+				// save the name (steam id)
+				currentDirectoryName := entry.Name()
+				// path to the current directory
+				folderPath := filepath.Join(*d.srcDirectoryPath, currentDirectoryName)
+
+				// all entries (files) of directory with content
+				files, err := os.ReadDir(folderPath)
+				if err != nil {
+					panic(err)
+				}
+
+				// going through all the entries
+				for _, file := range files {
+					if !file.IsDir() {
+						// check if the current file is ".pak"
+						if filepath.Ext(file.Name()) == ".pak" {
+							currentFileName := file.Name()
+							currentFilePath := filepath.Join(folderPath, currentFileName)
+
+							newFileName := getWorkshopItemTitle(currentDirectoryName) + ".pak"
+							newFilePath := filepath.Join(*d.targetDirectoryPath, newFileName)
+
+							if _, err := os.Stat(newFilePath); errors.Is(err, os.ErrNotExist) {
+								err := copyFile(currentFilePath, newFilePath)
+								if err != nil {
+									panic(err)
+								}
+							} else {
+								fmt.Println("skipped")
+							}
+						}
+					}
+				}
 			}
+		}
+	} else {
+		// going through all the directories of source folder
+		for _, entry := range entries {
+			if entry.IsDir() {
+				// save the name (steam id)
+				currentDirectoryName := entry.Name()
+				// path to the current directory
+				folderPath := filepath.Join(*d.srcDirectoryPath, currentDirectoryName)
 
-			// going through all the entries
-			for _, file := range files {
-				if !file.IsDir() {
-					// check if the current file is ".pak"
-					if strings.Split(file.Name(), ".")[1] == "pak" {
-						currentFileName := file.Name()
-						currentFilePath := filepath.Join(folderPath, currentFileName)
+				// all entries (files) of directory with content
+				files, err := os.ReadDir(folderPath)
+				if err != nil {
+					panic(err)
+				}
 
-						newFileName := currentDirectoryName + ".pak"
-						newFilePath := filepath.Join(*d.targetDirectoryPath, newFileName)
+				// going through all the entries
+				for _, file := range files {
+					if !file.IsDir() {
+						// check if the current file is ".pak"
+						if strings.Split(file.Name(), ".")[1] == "pak" {
+							currentFileName := file.Name()
+							currentFilePath := filepath.Join(folderPath, currentFileName)
 
-						err := copyFile(currentFilePath, newFilePath)
-						if err != nil {
-							panic(err)
+							newFileName := currentDirectoryName + ".pak"
+							newFilePath := filepath.Join(*d.targetDirectoryPath, newFileName)
+
+							err := copyFile(currentFilePath, newFilePath)
+							if err != nil {
+								panic(err)
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+
 	fmt.Printf("\nCopying took %s", time.Since(startTime))
 	wg.Done()
 }

@@ -3,9 +3,10 @@ package main
 import (
 	"github.com/gocolly/colly/v2"
 	"log/slog"
+	"strings"
 )
 
-func GetWorkshopItemTitle(itemId string) (title string) {
+func getWorkshopItemTitle(itemId string) (title string) {
 	title = itemId
 
 	c := colly.NewCollector()
@@ -22,6 +23,15 @@ func GetWorkshopItemTitle(itemId string) (title string) {
 	if err != nil {
 		slog.Error("sth happened trying to visit", "error", err)
 	}
+
+	// replace all whitespaces with underscores
+	title = strings.ReplaceAll(title, " ", "_")
+	// remove all quotes
+	title = strings.ReplaceAll(title, `"`, "")
+	// replace all slashes with underscores
+	title = strings.ReplaceAll(title, "/", "_")
+	// remove all new lines
+	title = strings.ReplaceAll(title, "\n", "")
 
 	return title
 }
